@@ -1,21 +1,21 @@
 <script lang="ts">
-  import { scheme } from '../../stores/scheme';
-  import { resolved } from '../../stores/scheme';
+  import { scheme, resolved } from '../../stores/scheme';
+  import { commitScheme } from '../../stores/history';
   import PaletteSidebar from './PaletteSidebar.svelte';
   import EntryBlock from './EntryBlock.svelte';
 
-  function updateBaseFont(formula: string) { scheme.update(s => ({ ...s, base: { ...s.base, font: formula } })); }
-  function updateBaseBack(formula: string) { scheme.update(s => ({ ...s, base: { ...s.base, back: formula } })); }
+  function updateBaseFont(formula: string) { commitScheme(s => ({ ...s, base: { ...s.base, font: formula } })); }
+  function updateBaseBack(formula: string) { commitScheme(s => ({ ...s, base: { ...s.base, back: formula } })); }
 
   function addEntry() {
-    scheme.update(s => ({
+    commitScheme(s => ({
       ...s,
       entries: [...s.entries, { name: 'new-entry', classes: [], fontFormula: null, backFormula: null }],
     }));
   }
 
   function updateEntry(i: number, updated: any) {
-    scheme.update(s => {
+    commitScheme(s => {
       const entries = [...s.entries];
       entries[i] = updated;
       return { ...s, entries };
@@ -23,7 +23,7 @@
   }
 
   function deleteEntry(i: number) {
-    scheme.update(s => ({ ...s, entries: s.entries.filter((_, j) => j !== i) }));
+    commitScheme(s => ({ ...s, entries: s.entries.filter((_, j) => j !== i) }));
   }
 
   let fontColor = $derived($resolved.base.font
