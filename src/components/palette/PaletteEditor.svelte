@@ -1,5 +1,6 @@
 <script lang="ts">
   import { scheme } from '../../stores/scheme';
+  import { commitScheme, beginDrag, endDrag } from '../../stores/history';
   import ColorRow from './ColorRow.svelte';
   import ScalarRow from './ScalarRow.svelte';
   import ColorPicker from './ColorPicker.svelte';
@@ -9,7 +10,7 @@
   let selected: Selection = $state(null);
 
   function addColor() {
-    scheme.update(s => ({
+    commitScheme(s => ({
       ...s,
       palette: {
         ...s.palette,
@@ -19,7 +20,7 @@
   }
 
   function updateColor(i: number, updated: any) {
-    scheme.update(s => {
+    commitScheme(s => {
       const colors = [...s.palette.colors];
       colors[i] = updated;
       return { ...s, palette: { ...s.palette, colors } };
@@ -28,14 +29,14 @@
 
   function removeColor(i: number) {
     if (selected?.kind === 'color' && selected.index === i) selected = null;
-    scheme.update(s => ({
+    commitScheme(s => ({
       ...s,
       palette: { ...s.palette, colors: s.palette.colors.filter((_, j) => j !== i) },
     }));
   }
 
   function addScalar() {
-    scheme.update(s => ({
+    commitScheme(s => ({
       ...s,
       palette: {
         ...s.palette,
@@ -45,7 +46,7 @@
   }
 
   function updateScalar(i: number, updated: any) {
-    scheme.update(s => {
+    commitScheme(s => {
       const scalars = [...s.palette.scalars];
       scalars[i] = updated;
       return { ...s, palette: { ...s.palette, scalars } };
@@ -54,7 +55,7 @@
 
   function removeScalar(i: number) {
     if (selected?.kind === 'scalar' && selected.index === i) selected = null;
-    scheme.update(s => ({
+    commitScheme(s => ({
       ...s,
       palette: { ...s.palette, scalars: s.palette.scalars.filter((_, j) => j !== i) },
     }));
@@ -78,7 +79,7 @@
       const key = dragList;
       const from = dragFrom,
         to = dragTo;
-      scheme.update(s => {
+      commitScheme(s => {
         const arr = [...s.palette[key]];
         const [item] = arr.splice(from, 1);
         arr.splice(to, 0, item);
@@ -163,7 +164,10 @@
         </label>
         <div class="scalar-editor">
           <input type="range" min="-2" max="2" step="0.01" value={scalar.value}
-            oninput={(e) => updateScalar(selected.index, { ...scalar, value: +(e.target as HTMLInputElement).value })} />
+            oninput={(e) => updateScalar(selected.index, { ...scalar, value: +(e.target as HTMLInputElement).value })}
+            onpointerdown={beginDrag}
+            onpointerup={endDrag}
+            onpointercancel={endDrag} />
           <input type="number" step="0.01" value={scalar.value}
             oninput={(e) => updateScalar(selected.index, { ...scalar, value: +(e.target as HTMLInputElement).value })} />
         </div>
