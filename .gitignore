@@ -15,3 +15,9 @@ dist/
 
 # TypeScript
 *.tsbuildinfo
+
+# Git worktrees
+.worktrees/
+
+# Brainstorming sessions
+.superpowers/
