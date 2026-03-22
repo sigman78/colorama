@@ -7,6 +7,7 @@ export function schemeToJson(scheme: ColorScheme): string {
 }
 
 export function schemeFromJson(json: string): ColorScheme {
+  // Unvalidated cast — caller must supply well-formed JSON matching ColorScheme shape.
   return JSON.parse(json) as ColorScheme;
 }
 

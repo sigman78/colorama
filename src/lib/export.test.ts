@@ -40,10 +40,9 @@ describe('generateCss', () => {
     expect(css).toContain('.hljs-type');
     expect(css).toContain('oklch(0.7300');
   });
-  it('omits null formula properties (no color: for comment)', () => {
+  it('omits entire rule for fully-null entry (no color: for comment)', () => {
     const css = generateCss(evaluateScheme(scheme), scheme);
-    // comment has null font and null back — no color: or background-color: in its block
-    const commentBlock = css.split('.hljs-comment')[1]?.split('}')[0] ?? '';
-    expect(commentBlock).not.toContain('color:');
+    // comment has null font and null back — entire rule block is skipped
+    expect(css).not.toContain('.hljs-comment');
   });
 });
