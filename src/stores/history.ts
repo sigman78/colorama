@@ -18,6 +18,13 @@ function pushUndo(snapshot: ColorScheme) {
   });
 }
 
+function pushRedo(snapshot: ColorScheme) {
+  _redoStack.update((s) => {
+    const next = [...s, snapshot];
+    return next.length > MAX ? next.slice(next.length - MAX) : next;
+  });
+}
+
 export function commitScheme(updater: (s: ColorScheme) => ColorScheme): void {
   const current = get(scheme);
   if (!_isDragging) {
@@ -30,8 +37,6 @@ export function commitScheme(updater: (s: ColorScheme) => ColorScheme): void {
 export function beginDrag(): void {
   if (!_isDragging) {
     pushUndo(get(scheme));
-    _redoStack.set([]);
-  } else {
     _redoStack.set([]);
   }
   _isDragging = true;
@@ -47,7 +52,7 @@ export function undo(): void {
   const snapshot = stack[stack.length - 1];
   const current = get(scheme);
   _undoStack.set(stack.slice(0, -1));
-  _redoStack.set([...get(_redoStack), current]);
+  pushRedo(current);
   scheme.set(snapshot);
 }
 
@@ -57,7 +62,7 @@ export function redo(): void {
   const snapshot = stack[stack.length - 1];
   const current = get(scheme);
   _redoStack.set(stack.slice(0, -1));
-  _undoStack.set([...get(_undoStack), current]);
+  pushUndo(current);
   scheme.set(snapshot);
 }
 
