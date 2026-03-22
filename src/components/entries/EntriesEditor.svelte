@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { scheme } from '../../../stores/scheme';
-  import { resolved } from '../../../stores/scheme';
+  import { scheme } from '../../stores/scheme';
+  import { resolved } from '../../stores/scheme';
   import PaletteSidebar from './PaletteSidebar.svelte';
   import EntryBlock from './EntryBlock.svelte';
 

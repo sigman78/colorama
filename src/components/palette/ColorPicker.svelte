@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { OKLCH } from '../../../lib/color';
-  import { oklchToHex, hexToOklch, oklchToRgb, rgbToOklch, oklchToHsl, hslToOklch } from '../../../lib/color';
+  import type { OKLCH } from '../../lib/color';
+  import { oklchToHex, hexToOklch, oklchToRgb, rgbToOklch, oklchToHsl, hslToOklch } from '../../lib/color';
 
   let { color, onchange }: { color: OKLCH; onchange: (c: OKLCH) => void } = $props();
 

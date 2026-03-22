@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { activeTab } from '../../stores/ui';
-  import type { EditorTab } from '../../stores/ui';
+  import { activeTab } from '../stores/ui';
+  import type { EditorTab } from '../stores/ui';
   import PaletteEditor from './palette/PaletteEditor.svelte';
   import EntriesEditor from './entries/EntriesEditor.svelte';
   import ExportPanel from './export/ExportPanel.svelte';

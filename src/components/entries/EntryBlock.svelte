@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { SchemeEntry } from '../../../lib/scheme';
-  import type { ResolvedEntry } from '../../../lib/scheme';
-  import { HLJS_CLASSES } from '../../../lib/hljs-classes';
+  import type { SchemeEntry } from '../../lib/scheme';
+  import type { ResolvedEntry } from '../../lib/scheme';
+  import { HLJS_CLASSES } from '../../lib/hljs-classes';
 
   let {
     entry, resolved, onupdate, ondelete,

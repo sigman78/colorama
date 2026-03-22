@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { scheme, resolved } from '../../../stores/scheme';
-  import { schemeToJson, schemeFromJson, generateCss } from '../../../lib/export';
+  import { scheme, resolved } from '../../stores/scheme';
+  import { schemeToJson, schemeFromJson, generateCss } from '../../lib/export';
 
   let jsonText = $derived(schemeToJson($scheme));
   let cssText = $derived(generateCss($resolved, $scheme));

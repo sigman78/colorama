@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { PaletteScalar } from '../../../lib/scheme';
+  import type { PaletteScalar } from '../../lib/scheme';
 
   let { entry, onupdate, ondelete }:
     { entry: PaletteScalar; onupdate: (e: PaletteScalar) => void; ondelete: () => void } = $props();

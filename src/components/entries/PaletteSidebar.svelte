@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { scheme } from '../../../stores/scheme';
-  import { oklchToHex } from '../../../lib/color';
+  import { scheme } from '../../stores/scheme';
+  import { oklchToHex } from '../../lib/color';
 </script>
 
 <div class="sidebar">

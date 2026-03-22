@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { PaletteColor } from '../../../lib/scheme';
+  import type { PaletteColor } from '../../lib/scheme';
   import ColorPicker from './ColorPicker.svelte';
-  import { oklchToHex } from '../../../lib/color';
-  import { pickerOpenId } from '../../../stores/ui';
+  import { oklchToHex } from '../../lib/color';
+  import { pickerOpenId } from '../../stores/ui';
 
   let { entry, onupdate, ondelete }:
     { entry: PaletteColor; onupdate: (e: PaletteColor) => void; ondelete: () => void } = $props();

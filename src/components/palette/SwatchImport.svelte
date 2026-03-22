@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { parseSwatch } from '../../../lib/swatches';
-  import { scheme } from '../../../stores/scheme';
+  import { parseSwatch } from '../../lib/swatches';
+  import { scheme } from '../../stores/scheme';
 
   let url = $state('');
   let error = $state<string | null>(null);

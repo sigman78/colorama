@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { scheme } from '../../../stores/scheme';
+  import { scheme } from '../../stores/scheme';
   import ColorRow from './ColorRow.svelte';
   import ScalarRow from './ScalarRow.svelte';
   import SwatchImport from './SwatchImport.svelte';
