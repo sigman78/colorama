@@ -4,7 +4,7 @@ import { evaluateScheme, type ColorScheme } from './scheme';
 
 const scheme: ColorScheme = {
   name: 'Test',
-  base: { font: { l: 0.7, c: 0.016, h: 205 }, back: { l: 0.27, c: 0.049, h: 219.84 } },
+  base: { font: '$blue', back: '$blue' },
   palette: {
     colors: [{ name: 'blue', color: { l: 0.73, c: 0.15, h: 244.94 } }],
     scalars: [{ name: 'dim', value: 0.6 }],
@@ -31,8 +31,7 @@ describe('generateCss', () => {
   it('emits base rule with font and background', () => {
     const css = generateCss(evaluateScheme(scheme), scheme);
     expect(css).toContain('pre code.hljs');
-    expect(css).toContain('oklch(0.7000');
-    expect(css).toContain('oklch(0.2700');
+    expect(css).toContain('oklch(0.7300'); // $blue resolves to l=0.73
   });
   it('emits entry selector with resolved color', () => {
     const css = generateCss(evaluateScheme(scheme), scheme);

@@ -23,8 +23,8 @@ export function generateCss(resolved: ResolvedScheme, scheme: ColorScheme): stri
     lines.push(`  --${c.name}: ${formatOklch(c.color)};`);
   }
   lines.push('');
-  lines.push(`  --cs-font: ${formatOklch(resolved.base.font)};`);
-  lines.push(`  --cs-back: ${formatOklch(resolved.base.back)};`);
+  if (resolved.base.font) lines.push(`  --cs-font: ${formatOklch(resolved.base.font)};`);
+  if (resolved.base.back) lines.push(`  --cs-back: ${formatOklch(resolved.base.back)};`);
   lines.push('}');
   lines.push('');
 
@@ -33,8 +33,8 @@ export function generateCss(resolved: ResolvedScheme, scheme: ColorScheme): stri
   lines.push('  display: block;');
   lines.push('  overflow-x: auto;');
   lines.push('  padding: 1em;');
-  lines.push(`  color: ${formatOklch(resolved.base.font)};`);
-  lines.push(`  background: ${formatOklch(resolved.base.back)};`);
+  if (resolved.base.font) lines.push(`  color: ${formatOklch(resolved.base.font)};`);
+  if (resolved.base.back) lines.push(`  background: ${formatOklch(resolved.base.back)};`);
   lines.push('}');
   lines.push('');
 
@@ -55,9 +55,10 @@ export function generateCss(resolved: ResolvedScheme, scheme: ColorScheme): stri
 /** Generate CSS suitable for injection into a <style> tag for live preview. */
 export function generateLiveCss(resolved: ResolvedScheme): string {
   const lines: string[] = [];
-  lines.push(
-    `pre code.hljs { color: ${formatOklch(resolved.base.font)}; background: ${formatOklch(resolved.base.back)}; }`
-  );
+  const baseProps: string[] = [];
+  if (resolved.base.font) baseProps.push(`color: ${formatOklch(resolved.base.font)}`);
+  if (resolved.base.back) baseProps.push(`background: ${formatOklch(resolved.base.back)}`);
+  if (baseProps.length) lines.push(`pre code.hljs { ${baseProps.join('; ')}; }`);
   for (const entry of resolved.entries) {
     if (entry.classes.length === 0) continue;
     const props: string[] = [];

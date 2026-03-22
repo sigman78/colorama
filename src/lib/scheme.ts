@@ -25,7 +25,7 @@ export interface SchemeEntry {
 
 export interface ColorScheme {
   name: string;
-  base: { font: OKLCH; back: OKLCH };
+  base: { font: string; back: string };
   palette: Palette;
   entries: SchemeEntry[];
 }
@@ -40,7 +40,7 @@ export interface ResolvedEntry {
 }
 
 export interface ResolvedScheme {
-  base: { font: OKLCH; back: OKLCH };
+  base: { font: OKLCH | null; fontError: string | null; back: OKLCH | null; backError: string | null };
   entries: ResolvedEntry[];
 }
 
@@ -65,8 +65,15 @@ function resolveFormula(
 
 export function evaluateScheme(scheme: ColorScheme): ResolvedScheme {
   const ctx = makeContext(scheme.palette);
+  const baseFont = resolveFormula(typeof scheme.base.font === 'string' ? scheme.base.font : null, ctx);
+  const baseBack = resolveFormula(typeof scheme.base.back === 'string' ? scheme.base.back : null, ctx);
   return {
-    base: scheme.base,
+    base: {
+      font: baseFont.color,
+      fontError: typeof scheme.base.font !== 'string' || scheme.base.font.trim() === '' ? 'required' : baseFont.error,
+      back: baseBack.color,
+      backError: typeof scheme.base.back !== 'string' || scheme.base.back.trim() === '' ? 'required' : baseBack.error,
+    },
     entries: scheme.entries.map((entry) => {
       const font = resolveFormula(entry.fontFormula, ctx);
       const back = resolveFormula(entry.backFormula, ctx);

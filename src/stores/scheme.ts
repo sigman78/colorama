@@ -6,7 +6,14 @@ import { SOLARIZED_DARK } from '../lib/defaults';
 function loadSaved(): ColorScheme {
   try {
     const raw = localStorage.getItem('color-schemer:scheme');
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw) as ColorScheme;
+      // Migrate old format: base.font/back were OKLCH objects, now formula strings
+      if (typeof parsed.base?.font !== 'string' || typeof parsed.base?.back !== 'string') {
+        return SOLARIZED_DARK;
+      }
+      return parsed;
+    }
   } catch {
     /* ignore */
   }

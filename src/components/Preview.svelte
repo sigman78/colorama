@@ -31,7 +31,7 @@
     hljs.highlight(snippets[$previewLang], { language: $previewLang === 'html' ? 'html' : $previewLang }).value
   );
   let liveCss = $derived(generateLiveCss($resolved));
-  let backStyle = $derived(`background: ${formatOklch($resolved.base.back)}`);
+  let backStyle = $derived($resolved.base.back ? `background: ${formatOklch($resolved.base.back)}` : '');
 
   $effect(() => {
     let el = document.getElementById('cs-live') as HTMLStyleElement | null;

@@ -3,8 +3,8 @@ import type { ColorScheme } from './scheme';
 export const SOLARIZED_DARK: ColorScheme = {
   name: 'Solarized Dark',
   base: {
-    font: { l: 0.7, c: 0.016, h: 205.0 },
-    back: { l: 0.2673, c: 0.0486, h: 219.84 },
+    font: '$base0',
+    back: '$base03',
   },
   palette: {
     colors: [

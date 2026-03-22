@@ -3,7 +3,7 @@ import { evaluateScheme, type ColorScheme } from './scheme';
 
 const scheme: ColorScheme = {
   name: 'Test',
-  base: { font: { l: 0.7, c: 0.016, h: 205 }, back: { l: 0.27, c: 0.049, h: 219.84 } },
+  base: { font: '$blue', back: '$blue' },
   palette: {
     colors: [{ name: 'blue', color: { l: 0.73, c: 0.15, h: 244.94 } }],
     scalars: [{ name: 'dim', value: 0.6 }],
