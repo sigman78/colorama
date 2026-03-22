@@ -1,6 +1,6 @@
 <script lang="ts">
   import { parseSwatch } from '../../lib/swatches';
-  import { scheme } from '../../stores/scheme';
+  import { commitScheme } from '../../stores/history';
 
   let url = $state('');
   let error = $state<string | null>(null);
@@ -10,7 +10,7 @@
     const colors = parseSwatch(url);
     if (!colors) { error = 'Could not parse palette from this URL'; return; }
     const newColors = colors.map((c, i) => ({ name: `color${i + 1}`, color: c }));
-    scheme.update(s => ({ ...s, palette: { ...s.palette, colors: [...s.palette.colors, ...newColors] } }));
+    commitScheme(s => ({ ...s, palette: { ...s.palette, colors: [...s.palette.colors, ...newColors] } }));
     url = '';
   }
 </script>

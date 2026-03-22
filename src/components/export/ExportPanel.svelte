@@ -1,5 +1,6 @@
 <script lang="ts">
   import { scheme, resolved } from '../../stores/scheme';
+  import { commitScheme } from '../../stores/history';
   import { schemeToJson, schemeFromJson, generateCss } from '../../lib/export';
 
   let jsonText = $derived(schemeToJson($scheme));
@@ -24,7 +25,8 @@
     if (!file) return;
     file.text().then((txt) => {
       try {
-        scheme.set(schemeFromJson(txt));
+        const loaded = schemeFromJson(txt);
+        commitScheme(() => loaded);
       } catch {
         alert('Invalid scheme JSON');
       }
