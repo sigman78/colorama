@@ -1,26 +1,23 @@
 <script lang="ts">
   import type { PaletteScalar } from '../../lib/scheme';
 
-  let { entry, onupdate, ondelete }:
-    { entry: PaletteScalar; onupdate: (e: PaletteScalar) => void; ondelete: () => void } = $props();
+  let { entry, onupdate, ondelete, isSelected, onselect }:
+    { entry: PaletteScalar; onupdate: (e: PaletteScalar) => void; ondelete: () => void;
+      isSelected: boolean; onselect: () => void } = $props();
 </script>
 
-<div class="scalar-row">
-  <input class="var-name" value={entry.name}
-    oninput={(e) => onupdate({ ...entry, name: (e.target as HTMLInputElement).value })} />
-  <input type="range" min="-2" max="2" step="0.01" value={entry.value} class="slider"
-    oninput={(e) => onupdate({ ...entry, value: +(e.target as HTMLInputElement).value })} />
-  <input type="number" step="0.01" value={entry.value} class="num-input"
-    oninput={(e) => onupdate({ ...entry, value: +(e.target as HTMLInputElement).value })} />
-  <button class="del-btn" onclick={ondelete}>&#x2715;</button>
+<div class="scalar-row" class:selected={isSelected} onclick={onselect}>
+  <span class="var-name">{entry.name}</span>
+  <span class="val-display">{entry.value.toFixed(3)}</span>
+  <button class="del-btn" onclick={(e) => { e.stopPropagation(); ondelete(); }}>&#x2715;</button>
 </div>
 
 <style>
-  .scalar-row { display: flex; align-items: center; gap: 8px; background: var(--bg-1); border-radius: 4px; padding: 5px 8px; margin-bottom: 4px; }
-  .var-name { background: none; border: none; color: var(--accent); font-family: monospace; font-size: 11px; width: 80px; outline: none; border-bottom: 1px solid transparent; }
-  .var-name:focus { border-bottom-color: var(--accent); }
-  .slider { flex: 1; accent-color: var(--accent); }
-  .num-input { width: 60px; background: var(--bg-2); border: 1px solid var(--border); border-radius: 3px; padding: 2px 5px; color: var(--text-0); font-family: monospace; font-size: 11px; }
-  .del-btn { background: none; border: none; color: var(--text-3); cursor: pointer; }
+  .scalar-row { display: flex; align-items: center; gap: 8px; background: var(--bg-1); border-radius: 4px; padding: 5px 8px; margin-bottom: 4px; min-height: 32px; box-sizing: border-box; flex: 1; min-width: 0; cursor: pointer; }
+  .scalar-row:hover { background: var(--bg-2); }
+  .scalar-row.selected { background: var(--bg-2); outline: 1px solid var(--accent); outline-offset: -1px; }
+  .var-name { color: var(--accent); font-family: monospace; font-size: 11px; width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .val-display { color: var(--text-3); font-family: monospace; font-size: 11px; flex: 1; }
+  .del-btn { background: none; border: none; color: var(--text-3); font-size: 11px; cursor: pointer; padding: 0 4px; }
   .del-btn:hover { color: var(--error); }
 </style>

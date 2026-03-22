@@ -1,44 +1,28 @@
 <script lang="ts">
   import type { PaletteColor } from '../../lib/scheme';
-  import ColorPicker from './ColorPicker.svelte';
   import { oklchToHex } from '../../lib/color';
-  import { pickerOpenId } from '../../stores/ui';
 
-  let { entry, onupdate, ondelete }:
-    { entry: PaletteColor; onupdate: (e: PaletteColor) => void; ondelete: () => void } = $props();
+  let { entry, onupdate, ondelete, isSelected, onselect }:
+    { entry: PaletteColor; onupdate: (e: PaletteColor) => void; ondelete: () => void;
+      isSelected: boolean; onselect: () => void } = $props();
 
-  let isOpen = $derived($pickerOpenId === entry.name);
   let hex = $derived(oklchToHex(entry.color));
-
-  function setName(e: Event) {
-    onupdate({ ...entry, name: (e.target as HTMLInputElement).value });
-  }
-  function togglePicker() {
-    pickerOpenId.set(isOpen ? null : entry.name);
-  }
 </script>
 
-<div class="color-row">
+<div class="color-row" class:selected={isSelected} onclick={onselect}>
   <div class="swatch" style="background: oklch({entry.color.l} {entry.color.c} {entry.color.h}deg)"></div>
-  <input class="var-name" value={entry.name} oninput={setName} />
+  <span class="var-name">{entry.name}</span>
   <span class="color-val mono">{hex}</span>
-  <button class="edit-btn" onclick={togglePicker}>{isOpen ? 'close' : 'edit'}</button>
-  <button class="del-btn" onclick={ondelete}>&#x2715;</button>
+  <button class="del-btn" onclick={(e) => { e.stopPropagation(); ondelete(); }}>&#x2715;</button>
 </div>
-{#if isOpen}
-  <div class="picker-wrap">
-    <ColorPicker color={entry.color} onchange={(c) => onupdate({ ...entry, color: c })} />
-  </div>
-{/if}
 
 <style>
-  .color-row { display: flex; align-items: center; gap: 8px; background: var(--bg-1); border-radius: 4px; padding: 5px 8px; margin-bottom: 4px; }
+  .color-row { display: flex; align-items: center; gap: 8px; background: var(--bg-1); border-radius: 4px; padding: 5px 8px; margin-bottom: 4px; min-height: 32px; box-sizing: border-box; flex: 1; min-width: 0; cursor: pointer; }
+  .color-row:hover { background: var(--bg-2); }
+  .color-row.selected { background: var(--bg-2); outline: 1px solid var(--accent); outline-offset: -1px; }
   .swatch { width: 18px; height: 18px; border-radius: 3px; flex-shrink: 0; }
-  .var-name { background: none; border: none; color: var(--accent); font-family: monospace; font-size: 11px; width: 80px; outline: none; border-bottom: 1px solid transparent; }
-  .var-name:focus { border-bottom-color: var(--accent); }
+  .var-name { color: var(--accent); font-family: monospace; font-size: 11px; width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .color-val { color: var(--text-3); font-size: 10px; flex: 1; }
-  .edit-btn, .del-btn { background: none; border: none; color: var(--text-3); font-size: 11px; cursor: pointer; padding: 0 4px; }
-  .edit-btn:hover { color: var(--accent); }
+  .del-btn { background: none; border: none; color: var(--text-3); font-size: 11px; cursor: pointer; padding: 0 4px; }
   .del-btn:hover { color: var(--error); }
-  .picker-wrap { padding: 4px 8px 8px 8px; }
 </style>
