@@ -1,5 +1,6 @@
 <script lang="ts">
   import { scheme } from './stores/scheme';
+  import { commitScheme, undo, redo } from './stores/history';
   import Preview from './components/Preview.svelte';
   import Editor from './components/Editor.svelte';
 
@@ -7,9 +8,15 @@
 
   function renameScheme(e: Event) {
     const val = (e.target as HTMLInputElement).value;
-    scheme.update(s => ({ ...s, name: val }));
+    commitScheme(s => ({ ...s, name: val }));
   }
 </script>
+
+<svelte:window onkeydown={(e) => {
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.code === 'KeyZ') { e.preventDefault(); undo(); }
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.code === 'KeyY') { e.preventDefault(); redo(); }
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'KeyZ') { e.preventDefault(); redo(); }
+}} />
 
 <div class="app">
   <header class="app-header">
