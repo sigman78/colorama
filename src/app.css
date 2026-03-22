@@ -1,4 +1,10 @@
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 :root {
   --bg-0: #161618;
@@ -23,10 +29,39 @@
   background: var(--bg-1);
 }
 
-body { height: 100vh; overflow: hidden; }
-#app { height: 100vh; display: flex; flex-direction: column; }
+body {
+  height: 100vh;
+  overflow: hidden;
+}
+#app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-code, .mono {
+code,
+.mono {
   font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
   font-size: 11px;
+}
+
+/* Minimalistic scrollbars — 4px, app color scheme */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-4) var(--bg-1);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-1);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-4);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-3);
 }
