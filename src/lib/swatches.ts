@@ -17,7 +17,7 @@ export function parsePaletton(url: string): OKLCH[] | null {
     const hash = new URL(url).hash;
     const hexes = [...hash.matchAll(/[0-9a-fA-F]{6}/g)].map((m) => m[0]);
     if (hexes.length === 0) return null;
-    // Deduplicate and filter out likely non-color 6-char sequences
+    // Deduplicate; cap at 8 to avoid returning accidental non-color hex sequences from long hashes
     const unique = [...new Set(hexes)].slice(0, 8);
     return unique.map((h) => hexToOklch('#' + h));
   } catch {

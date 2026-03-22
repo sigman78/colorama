@@ -56,6 +56,7 @@ export const SOLARIZED_DARK: ColorScheme = {
         '.hljs-regexp',
         '.hljs-link',
         '.hljs-symbol',
+        '.hljs-variable.constant_',
       ],
       fontFormula: '$cyan',
       backFormula: null,
