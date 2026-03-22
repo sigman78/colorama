@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { beginDrag, endDrag } from '../../stores/history';
   let { value, min, max, step, gradient, ticks = [], oninput }: {
     value: number;
     min: number;
@@ -17,6 +18,9 @@
       {min} {max} {step} {value}
       style="--gs-grad: {gradient}"
       oninput={(e) => oninput(+(e.target as HTMLInputElement).value)}
+      onpointerdown={beginDrag}
+      onpointerup={endDrag}
+      onpointercancel={endDrag}
     />
     {#each ticks as tick}
       <div class="gs-tick" style="left: calc({tick.pos} * (100% - 16px) + 8px); {tick.style ?? ''}">
