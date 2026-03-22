@@ -1,0 +1,93 @@
+import type { ColorScheme } from './scheme';
+
+export const SOLARIZED_DARK: ColorScheme = {
+  name: 'Solarized Dark',
+  base: {
+    font: { l: 0.7, c: 0.016, h: 205.0 },
+    back: { l: 0.2673, c: 0.0486, h: 219.84 },
+  },
+  palette: {
+    colors: [
+      { name: 'base03', color: { l: 0.2673, c: 0.0486, h: 219.84 } },
+      { name: 'base02', color: { l: 0.3092, c: 0.0518, h: 219.68 } },
+      { name: 'base01', color: { l: 0.46, c: 0.024, h: 219.2 } },
+      { name: 'base0', color: { l: 0.7, c: 0.016, h: 205.0 } },
+      { name: 'yellow', color: { l: 0.75, c: 0.14, h: 85.72 } },
+      { name: 'orange', color: { l: 0.5808, c: 0.1732, h: 39.49 } },
+      { name: 'red', color: { l: 0.5863, c: 0.2064, h: 27.11 } },
+      { name: 'cyan', color: { l: 0.76, c: 0.12, h: 187.42 } },
+      { name: 'blue', color: { l: 0.73, c: 0.15, h: 244.94 } },
+      { name: 'green', color: { l: 0.6444, c: 0.1508, h: 118.61 } },
+    ],
+    scalars: [],
+  },
+  entries: [
+    {
+      name: 'keyword',
+      classes: [
+        '.hljs-keyword',
+        '.hljs-type',
+        '.hljs-template-tag',
+        '.hljs-name',
+        '.hljs-selector-tag',
+        '.hljs-variable',
+        '.hljs-template-variable',
+        '.hljs-tag',
+        '.hljs-subst',
+        '.hljs-attr',
+        '.hljs-attribute',
+        '.hljs-built_in',
+      ],
+      fontFormula: '$yellow',
+      backFormula: null,
+    },
+    {
+      name: 'punctuation',
+      classes: ['.hljs-punctuation', '.hljs-operator', '.hljs-bullet'],
+      fontFormula: '$base01',
+      backFormula: null,
+    },
+    {
+      name: 'constant',
+      classes: [
+        '.hljs-string',
+        '.hljs-number',
+        '.hljs-literal',
+        '.hljs-regexp',
+        '.hljs-link',
+        '.hljs-symbol',
+      ],
+      fontFormula: '$cyan',
+      backFormula: null,
+    },
+    {
+      name: 'definition',
+      classes: [
+        '.hljs-selector-id',
+        '.hljs-selector-class',
+        '.hljs-title',
+        '.hljs-title.class_',
+        '.hljs-title.class_.inherited__',
+        '.hljs-title.function_',
+        '.hljs-function .hljs-title',
+        '.hljs-section',
+      ],
+      fontFormula: '$blue',
+      backFormula: null,
+    },
+    {
+      name: 'special',
+      classes: ['.hljs-meta', '.hljs-meta .hljs-keyword', '.hljs-meta-keyword'],
+      fontFormula: '$orange',
+      backFormula: null,
+    },
+    {
+      name: 'comment',
+      classes: ['.hljs-comment', '.hljs-quote', '.hljs-doctag'],
+      fontFormula: '$base03',
+      backFormula: '$base01',
+    },
+    { name: 'addition', classes: ['.hljs-addition'], fontFormula: '$green', backFormula: null },
+    { name: 'deletion', classes: ['.hljs-deletion'], fontFormula: '$red', backFormula: null },
+  ],
+};
