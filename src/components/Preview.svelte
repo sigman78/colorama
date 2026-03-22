@@ -21,6 +21,7 @@
   import { previewLang } from '../stores/ui';
   import { resolved } from '../stores/scheme';
   import { generateLiveCss } from '../lib/export';
+  import { formatOklch } from '../lib/color';
   import { snippets } from '../snippets/index';
   import type { PreviewLang } from '../stores/ui';
 
@@ -30,6 +31,7 @@
     hljs.highlight(snippets[$previewLang], { language: $previewLang === 'html' ? 'html' : $previewLang }).value
   );
   let liveCss = $derived(generateLiveCss($resolved));
+  let backStyle = $derived(`background: ${formatOklch($resolved.base.back)}`);
 
   $effect(() => {
     let el = document.getElementById('cs-live') as HTMLStyleElement | null;
@@ -52,7 +54,7 @@
       >{lang}</button>
     {/each}
   </div>
-  <pre class="code-area"><code class="hljs">{@html highlightedHtml}</code></pre>
+  <pre class="code-area" style={backStyle}><code class="hljs">{@html highlightedHtml}</code></pre>
 </div>
 
 <style>
