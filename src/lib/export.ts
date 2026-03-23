@@ -77,6 +77,9 @@ export function generateLiveCss(resolved: ResolvedScheme): string {
   if (resolved.base.font) baseProps.push(`color: ${formatOklch(resolved.base.font)}`);
   if (resolved.base.back) baseProps.push(`background: ${formatOklch(resolved.base.back)}`);
   if (baseProps.length) lines.push(`pre code.hljs { ${baseProps.join('; ')}; }`);
+  lines.push(
+    `pre code.hljs span { padding-block: 0.35em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }`,
+  );
   for (const entry of resolved.entries) {
     if (entry.classes.length === 0) continue;
     const props: string[] = [];
