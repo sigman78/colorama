@@ -12,6 +12,9 @@ function loadSaved(): ColorScheme {
       if (typeof parsed.base?.font !== 'string' || typeof parsed.base?.back !== 'string') {
         return SOLARIZED_DARK;
       }
+      // Hard cut: classes now store scope names, not .hljs-* CSS selector strings
+      const hasOldClasses = parsed.entries?.some((e) => e.classes?.some((c) => c.startsWith('.')));
+      if (hasOldClasses) return SOLARIZED_DARK;
       return parsed;
     }
   } catch {
