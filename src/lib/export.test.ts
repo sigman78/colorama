@@ -12,11 +12,11 @@ const scheme: ColorScheme = {
   entries: [
     {
       name: 'keyword',
-      classes: ['.hljs-keyword', '.hljs-type'],
+      classes: ['keyword', 'type'],
       fontFormula: '$blue',
       backFormula: null,
     },
-    { name: 'comment', classes: ['.hljs-comment'], fontFormula: null, backFormula: null },
+    { name: 'comment', classes: ['comment'], fontFormula: null, backFormula: null },
   ],
 };
 
@@ -43,6 +43,18 @@ describe('generateCss', () => {
     const css = generateCss(evaluateScheme(scheme), scheme);
     // comment has null font and null back — entire rule block is skipped
     expect(css).not.toContain('.hljs-comment');
+  });
+  it('converts subscope and nested scope names to CSS selectors in output', () => {
+    const s: ColorScheme = {
+      ...scheme,
+      entries: [
+        { name: 'def', classes: ['title.class', 'meta keyword'], fontFormula: '$blue', backFormula: null },
+      ],
+    };
+    const css = generateCss(evaluateScheme(s), s);
+    expect(css).toContain('.hljs-title.class_');
+    expect(css).toContain('.hljs-meta .hljs-keyword');
+    expect(css).not.toContain('title.class {');  // raw scope name must not appear as selector
   });
 });
 

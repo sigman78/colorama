@@ -60,7 +60,7 @@ export function generateCss(resolved: ResolvedScheme, scheme: ColorScheme): stri
   for (const entry of resolved.entries) {
     if (entry.classes.length === 0) continue;
     if (entry.font === null && entry.back === null) continue;
-    lines.push(entry.classes.join(',\n') + ' {');
+    lines.push(entry.classes.map((c) => scopeToCssSelector(c)).join(',\n') + ' {');
     if (entry.font !== null) lines.push(`  color: ${formatOklch(entry.font)};`);
     if (entry.back !== null) lines.push(`  background-color: ${formatOklch(entry.back)};`);
     lines.push('}');
@@ -82,7 +82,7 @@ export function generateLiveCss(resolved: ResolvedScheme): string {
     const props: string[] = [];
     if (entry.font !== null) props.push(`color: ${formatOklch(entry.font)}`);
     if (entry.back !== null) props.push(`background-color: ${formatOklch(entry.back)}`);
-    if (props.length > 0) lines.push(`${entry.classes.join(', ')} { ${props.join('; ')}; }`);
+    if (props.length > 0) lines.push(`${entry.classes.map((c) => scopeToCssSelector(c)).join(', ')} { ${props.join('; ')}; }`);
   }
   return lines.join('\n');
 }
