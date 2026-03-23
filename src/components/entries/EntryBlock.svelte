@@ -6,16 +6,20 @@
   import type { OKLCH } from '../../lib/color';
 
   let {
-    entry, resolved, resolvedBase, onupdate, ondelete,
+    entry, resolved, resolvedBase, allUsedClasses, onupdate, ondelete,
   }: {
     entry: SchemeEntry;
     resolved: ResolvedEntry;
     resolvedBase: { font: OKLCH | null; back: OKLCH | null };
+    allUsedClasses: Set<string>;
     onupdate: (e: SchemeEntry) => void;
     ondelete: () => void;
   } = $props();
 
   let showClassDropdown = $state(false);
+  let searchQuery = $state('');
+  let activeIndex = $state(-1);
+  let searchEl = $state<HTMLInputElement | null>(null);
 
   function setName(e: Event) {
     onupdate({ ...entry, name: (e.target as HTMLInputElement).value });
@@ -33,12 +37,55 @@
     if (!entry.classes.includes(cls)) onupdate({ ...entry, classes: [...entry.classes, cls] });
     showClassDropdown = false;
   }
-  function addCustomClass(e: KeyboardEvent) {
-    if (e.key === 'Enter') {
-      const val = (e.target as HTMLInputElement).value.trim();
-      if (val && !entry.classes.includes(val)) onupdate({ ...entry, classes: [...entry.classes, val] });
-      (e.target as HTMLInputElement).value = '';
+
+  let filteredClasses = $derived.by(() => {
+    const q = searchQuery.toLowerCase();
+    const items = HLJS_CLASSES.filter((c) => !entry.classes.includes(c))
+      .filter((c) => c.includes(q))
+      .map((c) => ({ cls: c, disabled: allUsedClasses.has(c) }));
+    return [...items.filter((i) => !i.disabled), ...items.filter((i) => i.disabled)];
+  });
+
+  $effect(() => {
+    if (showClassDropdown && searchEl) {
+      searchEl.focus();
+      activeIndex = -1;
+      searchQuery = '';
+    }
+  });
+
+  $effect(() => {
+    // reset nav when search changes
+    void searchQuery;
+    activeIndex = -1;
+  });
+
+  $effect(() => {
+    if (activeIndex >= 0 && showClassDropdown) {
+      const el = document.querySelector(`.class-dropdown [data-idx="${activeIndex}"]`) as HTMLElement | null;
+      el?.scrollIntoView({ block: 'nearest' });
+    }
+  });
+
+  function onSearchKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
       showClassDropdown = false;
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIndex = Math.min(activeIndex + 1, filteredClasses.length - 1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIndex = Math.max(activeIndex - 1, -1);
+    } else if (e.key === 'Enter') {
+      if (activeIndex >= 0 && !filteredClasses[activeIndex].disabled) {
+        addClass(filteredClasses[activeIndex].cls);
+      } else if (activeIndex === -1) {
+        const val = searchQuery.trim();
+        if (val && !entry.classes.includes(val)) {
+          onupdate({ ...entry, classes: [...entry.classes, val] });
+          showClassDropdown = false;
+        }
+      }
     }
   }
 
@@ -78,13 +125,33 @@
     {#each entry.classes as cls}
       <span class="cls-tag">{cls} <button class="cls-remove" onclick={() => removeClass(cls)}>&#x2715;</button></span>
     {/each}
-    <button class="cls-add" onclick={() => showClassDropdown = !showClassDropdown}>+ add</button>
+    <button class="cls-add" onclick={() => (showClassDropdown = !showClassDropdown)}>+ add</button>
     {#if showClassDropdown}
+      <div class="dropdown-backdrop" onclick={() => (showClassDropdown = false)}></div>
       <div class="class-dropdown">
-        <input class="class-search" placeholder=".hljs-... or type custom" onkeydown={addCustomClass} />
-        {#each HLJS_CLASSES.filter(c => !entry.classes.includes(c)) as cls}
-          <button class="class-option" onclick={() => addClass(cls)}>{cls}</button>
+        <div class="dropdown-header">
+          <input
+            bind:this={searchEl}
+            bind:value={searchQuery}
+            class="class-search"
+            placeholder="search or type custom..."
+            onkeydown={onSearchKeydown}
+          />
+          <button class="dropdown-close" onclick={() => (showClassDropdown = false)}>&#x2715;</button>
+        </div>
+        {#each filteredClasses as { cls, disabled }, idx}
+          <button
+            class="class-option"
+            class:active={idx === activeIndex}
+            class:used={disabled}
+            disabled={disabled}
+            data-idx={idx}
+            onclick={() => addClass(cls)}
+          >{cls}</button>
         {/each}
+        {#if filteredClasses.length === 0}
+          <span class="no-results">no matches</span>
+        {/if}
       </div>
     {/if}
   </div>
@@ -131,10 +198,18 @@
   .cls-remove { background: none; border: none; color: var(--text-3); cursor: pointer; font-size: 10px; }
   .cls-remove:hover { color: var(--error); }
   .cls-add { background: none; border: 1px dashed var(--bg-4); border-radius: 3px; padding: 2px 7px; font-size: 10px; color: var(--accent); cursor: pointer; }
-  .class-dropdown { position: absolute; top: 100%; left: 0; z-index: 10; background: var(--bg-0); border: 1px solid var(--border); border-radius: 4px; padding: 6px; max-height: 200px; overflow-y: auto; min-width: 200px; }
-  .class-search { width: 100%; background: var(--bg-2); border: 1px solid var(--border); border-radius: 3px; padding: 3px 6px; color: var(--text-0); font-size: 11px; margin-bottom: 4px; }
-  .class-option { display: block; width: 100%; background: none; border: none; text-align: left; padding: 2px 4px; color: var(--text-1); font-family: monospace; font-size: 10px; cursor: pointer; border-radius: 2px; }
-  .class-option:hover { background: var(--bg-3); }
+  .dropdown-backdrop { position: fixed; inset: 0; z-index: 9; }
+  .class-dropdown { position: absolute; top: 100%; left: 0; z-index: 10; background: var(--bg-0); border: 1px solid var(--border); border-radius: 4px; padding: 6px; max-height: 220px; overflow-y: auto; min-width: 220px; display: flex; flex-direction: column; gap: 1px; }
+  .dropdown-header { display: flex; gap: 4px; margin-bottom: 4px; flex-shrink: 0; }
+  .class-search { flex: 1; background: var(--bg-2); border: 1px solid var(--border); border-radius: 3px; padding: 3px 6px; color: var(--text-0); font-size: 11px; outline: none; }
+  .class-search:focus { border-color: var(--accent); }
+  .dropdown-close { background: none; border: none; color: var(--text-3); cursor: pointer; padding: 0 4px; font-size: 12px; }
+  .dropdown-close:hover { color: var(--error); }
+  .class-option { display: block; width: 100%; background: none; border: none; text-align: left; padding: 2px 6px; color: var(--text-1); font-family: monospace; font-size: 10px; cursor: pointer; border-radius: 2px; flex-shrink: 0; }
+  .class-option:hover:not(:disabled) { background: var(--bg-3); }
+  .class-option.active { background: var(--bg-3); outline: 1px solid var(--accent); outline-offset: -1px; }
+  .class-option.used { color: var(--text-2); cursor: default; opacity: 0.65; }
+  .no-results { font-size: 10px; color: var(--text-3); padding: 4px 6px; font-style: italic; }
 
   .formula-row { display: flex; align-items: center; gap: 7px; margin-bottom: 3px; }
   .formula-label { font-size: 10px; color: var(--text-3); width: 30px; text-align: right; flex-shrink: 0; }

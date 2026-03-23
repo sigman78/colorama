@@ -32,6 +32,8 @@
   let backColor = $derived($resolved.base.back
     ? `oklch(${$resolved.base.back.l} ${$resolved.base.back.c} ${$resolved.base.back.h}deg)`
     : 'transparent');
+
+  let allUsedClasses = $derived(new Set($scheme.entries.flatMap((e) => e.classes)));
 </script>
 
 <div class="entries-layout">
@@ -63,6 +65,7 @@
         entry={entry}
         resolved={$resolved.entries[i]}
         resolvedBase={$resolved.base}
+        allUsedClasses={allUsedClasses}
         onupdate={(e) => updateEntry(i, e)}
         ondelete={() => deleteEntry(i)}
       />
