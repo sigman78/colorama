@@ -227,6 +227,28 @@ export function p3ChromaLimit(l: number, h: number): number {
   return lo;
 }
 
+/** APCA-W3 contrast (Lc). Negative = light-on-dark, positive = dark-on-light. */
+export function apcaContrast(text: OKLCH, bg: OKLCH): number {
+  const yFromOklch = (c: OKLCH) => {
+    const [r, g, b] = oklchToLinearChannels(c.l, c.c, c.h);
+    return 0.2126 * Math.max(0, r) + 0.7152 * Math.max(0, g) + 0.0722 * Math.max(0, b);
+  };
+  const Yt = yFromOklch(text);
+  const Yb = yFromOklch(bg);
+  if (Math.abs(Yb - Yt) < 0.0005) return 0;
+  let sapc: number;
+  if (Yb >= Yt) {
+    sapc = (Math.pow(Yb, 0.56) - Math.pow(Yt, 0.57)) * 1.14;
+    if (sapc < 0.1) return 0;
+    sapc -= 0.027;
+  } else {
+    sapc = (Math.pow(Yb, 0.65) - Math.pow(Yt, 0.62)) * 1.14;
+    if (sapc > -0.1) return 0;
+    sapc += 0.027;
+  }
+  return sapc * 100;
+}
+
 /** CSS `color(display-p3 ...)` string for use in style attributes */
 export function oklchToP3CssColor(oklch: OKLCH): string {
   const [rl, gl, bl] = oklchToLinearP3(oklch);

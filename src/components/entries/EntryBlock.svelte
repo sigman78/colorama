@@ -2,12 +2,15 @@
   import type { SchemeEntry } from '../../lib/scheme';
   import type { ResolvedEntry } from '../../lib/scheme';
   import { HLJS_CLASSES } from '../../lib/hljs-classes';
+  import { apcaContrast } from '../../lib/color';
+  import type { OKLCH } from '../../lib/color';
 
   let {
-    entry, resolved, onupdate, ondelete,
+    entry, resolved, resolvedBase, onupdate, ondelete,
   }: {
     entry: SchemeEntry;
     resolved: ResolvedEntry;
+    resolvedBase: { font: OKLCH | null; back: OKLCH | null };
     onupdate: (e: SchemeEntry) => void;
     ondelete: () => void;
   } = $props();
@@ -41,11 +44,32 @@
 
   let fontColor = $derived(resolved.font ? `oklch(${resolved.font.l} ${resolved.font.c} ${resolved.font.h}deg)` : 'transparent');
   let backColor = $derived(resolved.back ? `oklch(${resolved.back.l} ${resolved.back.c} ${resolved.back.h}deg)` : 'transparent');
+
+  let effectiveFont = $derived(resolved.font ?? resolvedBase.font);
+  let effectiveBack = $derived(resolved.back ?? resolvedBase.back);
+  let contrastLc = $derived(
+    effectiveFont && effectiveBack ? apcaContrast(effectiveFont, effectiveBack) : null,
+  );
+  let contrastLabel = $derived(
+    contrastLc !== null ? Math.abs(Math.round(contrastLc)).toString() : '--',
+  );
+  let contrastClass = $derived(
+    contrastLc === null
+      ? 'contrast-na'
+      : Math.abs(contrastLc) >= 75
+        ? 'contrast-good'
+        : Math.abs(contrastLc) >= 60
+          ? 'contrast-ok'
+          : Math.abs(contrastLc) >= 45
+            ? 'contrast-low'
+            : 'contrast-poor',
+  );
 </script>
 
 <div class="entry-block">
   <div class="entry-header">
     <input class="entry-name" value={entry.name} oninput={setName} />
+    <span class="contrast-badge {contrastClass}">{contrastLabel}</span>
     <div class="combo-swatch" style="background: {backColor || 'var(--bg-3)'}; color: {fontColor || 'var(--text-1)'}">Ab</div>
     <button class="del-btn" onclick={ondelete}>&#x2715;</button>
   </div>
@@ -93,6 +117,12 @@
   .entry-name { background: none; border: none; color: var(--text-1); font-family: monospace; font-size: 12px; font-weight: 500; outline: none; border-bottom: 1px solid transparent; flex: 1; }
   .entry-name:focus { border-bottom-color: var(--accent); }
   .combo-swatch { width: 28px; height: 20px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; flex-shrink: 0; }
+  .contrast-badge { font-size: 9px; font-family: monospace; font-weight: 600; padding: 2px 4px; border-radius: 3px; flex-shrink: 0; min-width: 22px; text-align: center; line-height: 16px; }
+  .contrast-na   { background: var(--bg-3); color: var(--text-3); }
+  .contrast-good { background: oklch(0.28 0.05 145); color: oklch(0.72 0.15 145); }
+  .contrast-ok   { background: oklch(0.28 0.04 85);  color: oklch(0.78 0.14 85); }
+  .contrast-low  { background: oklch(0.28 0.06 55);  color: oklch(0.75 0.16 55); }
+  .contrast-poor { background: oklch(0.28 0.06 27);  color: oklch(0.72 0.18 27); }
   .del-btn { background: none; border: none; color: var(--text-3); cursor: pointer; }
   .del-btn:hover { color: var(--error); }
 

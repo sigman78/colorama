@@ -62,6 +62,7 @@
       <EntryBlock
         entry={entry}
         resolved={$resolved.entries[i]}
+        resolvedBase={$resolved.base}
         onupdate={(e) => updateEntry(i, e)}
         ondelete={() => deleteEntry(i)}
       />
