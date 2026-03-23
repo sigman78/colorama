@@ -67,6 +67,10 @@
     }
   });
 
+  function displayScope(scope: string): string {
+    return scope.includes(' ') ? scope.replace(' ', ' > ') : scope;
+  }
+
   function onSearchKeydown(e: KeyboardEvent) {
     if (e.key === 'Escape') {
       showClassDropdown = false;
@@ -123,7 +127,7 @@
 
   <div class="classes-row">
     {#each entry.classes as cls}
-      <span class="cls-tag">{cls} <button class="cls-remove" onclick={() => removeClass(cls)}>&#x2715;</button></span>
+      <span class="cls-tag">{displayScope(cls)} <button class="cls-remove" onclick={() => removeClass(cls)}>&#x2715;</button></span>
     {/each}
     <button class="cls-add" onclick={() => (showClassDropdown = !showClassDropdown)}>+ add</button>
     {#if showClassDropdown}
@@ -147,7 +151,7 @@
             disabled={disabled}
             data-idx={idx}
             onclick={() => addClass(cls)}
-          >{cls}</button>
+          >{displayScope(cls)}</button>
         {/each}
         {#if filteredClasses.length === 0}
           <span class="no-results">no matches</span>
