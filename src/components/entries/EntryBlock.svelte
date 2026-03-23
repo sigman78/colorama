@@ -131,7 +131,8 @@
     {/each}
     <button class="cls-add" onclick={() => (showClassDropdown = !showClassDropdown)}>+ add</button>
     {#if showClassDropdown}
-      <div class="dropdown-backdrop" onclick={() => (showClassDropdown = false)}></div>
+      <!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events -->
+      <div class="dropdown-backdrop" aria-hidden="true" onclick={() => (showClassDropdown = false)}></div>
       <div class="class-dropdown">
         <div class="dropdown-header">
           <input

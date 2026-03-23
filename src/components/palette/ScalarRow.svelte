@@ -6,7 +6,8 @@
       isSelected: boolean; onselect: () => void } = $props();
 </script>
 
-<div class="scalar-row" class:selected={isSelected} onclick={onselect}>
+<div class="scalar-row" class:selected={isSelected} role="button" tabindex="0"
+  onclick={onselect} onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') onselect(); }}>
   <span class="var-name">{entry.name}</span>
   <span class="val-display">{entry.value.toFixed(3)}</span>
   <button class="del-btn" onclick={(e) => { e.stopPropagation(); ondelete(); }}>&#x2715;</button>

@@ -101,6 +101,7 @@
       <div
         class="drag-item"
         class:is-drop-target={dragList === 'colors' && dragTo === i && dragFrom !== i}
+        role="listitem"
         draggable="true"
         ondragstart={() => startDrag('colors', i)}
         ondragover={(e) => { e.preventDefault(); enterDrop('colors', i); }}
@@ -124,6 +125,7 @@
       <div
         class="drag-item"
         class:is-drop-target={dragList === 'scalars' && dragTo === i && dragFrom !== i}
+        role="listitem"
         draggable="true"
         ondragstart={() => startDrag('scalars', i)}
         ondragover={(e) => { e.preventDefault(); enterDrop('scalars', i); }}

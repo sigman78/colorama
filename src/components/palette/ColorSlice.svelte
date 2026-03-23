@@ -134,7 +134,8 @@
   }
 </script>
 
-<div class="slice-wrap" {onclick}>
+<!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events -->
+<div class="slice-wrap" role="presentation" {onclick}>
   <canvas bind:this={canvasEl}></canvas>
   <div class="crosshair" style="left: {dotXPct}%; top: {dotYPct}%;"></div>
   <div class="axis-label axis-l">L →</div>

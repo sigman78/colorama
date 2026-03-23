@@ -9,7 +9,8 @@
   let hex = $derived(oklchToHex(entry.color));
 </script>
 
-<div class="color-row" class:selected={isSelected} onclick={onselect}>
+<div class="color-row" class:selected={isSelected} role="button" tabindex="0"
+  onclick={onselect} onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') onselect(); }}>
   <div class="swatch" style="background: oklch({entry.color.l} {entry.color.c} {entry.color.h}deg)"></div>
   <span class="var-name">{entry.name}</span>
   <span class="color-val mono">{hex}</span>
