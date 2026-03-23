@@ -20,6 +20,33 @@ const scheme: ColorScheme = {
   ],
 };
 
+describe('$F / $B virtual variables', () => {
+  const blue = { l: 0.73, c: 0.15, h: 244.94 };
+  const s: ColorScheme = {
+    name: 'VirtualTest',
+    base: { font: '$blue', back: '$blue' },
+    palette: { colors: [{ name: 'blue', color: blue }], scalars: [] },
+    entries: [
+      { name: 'e1', classes: [], fontFormula: '$blue', backFormula: '$F' },
+      { name: 'e2', classes: [], fontFormula: '$F', backFormula: null },
+      { name: 'e3', classes: [], fontFormula: null, backFormula: '$B' },
+      { name: 'e4', classes: [], fontFormula: null, backFormula: '$F' },
+    ],
+  };
+  it('$F in back formula resolves to entry font', () => {
+    expect(evaluateScheme(s).entries[0].back).toEqual(blue);
+  });
+  it('$F in font formula resolves to base font', () => {
+    expect(evaluateScheme(s).entries[1].font).toEqual(blue);
+  });
+  it('$B in back formula resolves to base back', () => {
+    expect(evaluateScheme(s).entries[2].back).toEqual(blue);
+  });
+  it('$F in back with no entry font falls back to base font', () => {
+    expect(evaluateScheme(s).entries[3].back).toEqual(blue);
+  });
+});
+
 describe('evaluateScheme', () => {
   it('resolves a simple color variable entry', () => {
     const result = evaluateScheme(scheme);

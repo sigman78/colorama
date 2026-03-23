@@ -17,7 +17,7 @@
 <div class="sidebar">
   <div class="section-label">Colors</div>
   {#each $scheme.palette.colors as c}
-    <div class="ref-row" onmousedown={(e) => { e.preventDefault(); insertIntoFocused(c.name); }}>
+    <div class="ref-row" role="button" tabindex="-1" onmousedown={(e) => { e.preventDefault(); insertIntoFocused(c.name); }}>
       <div class="ref-swatch" style="background: oklch({c.color.l} {c.color.c} {c.color.h}deg)"></div>
       <span class="ref-name">${c.name}</span>
       <span class="ref-val mono">{oklchToHex(c.color)}</span>
@@ -27,12 +27,20 @@
   {#if $scheme.palette.scalars.length > 0}
     <div class="section-label" style="margin-top: 10px">Scalars</div>
     {#each $scheme.palette.scalars as s}
-      <div class="scalar-row" onmousedown={(e) => { e.preventDefault(); insertIntoFocused(s.name); }}>
+      <div class="scalar-row" role="button" tabindex="-1" onmousedown={(e) => { e.preventDefault(); insertIntoFocused(s.name); }}>
         <span class="ref-name">${s.name}</span>
         <span class="ref-val mono">{s.value}</span>
       </div>
     {/each}
   {/if}
+
+  <div class="section-label" style="margin-top: 10px">Virtual</div>
+  {#each [{ name: 'F', label: 'entry font' }, { name: 'B', label: 'entry back' }] as v}
+    <div class="scalar-row" role="button" tabindex="-1" onmousedown={(e) => { e.preventDefault(); insertIntoFocused(v.name); }}>
+      <span class="ref-name">${v.name}</span>
+      <span class="ref-val">{v.label}</span>
+    </div>
+  {/each}
 </div>
 
 <style>

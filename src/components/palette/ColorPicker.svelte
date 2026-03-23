@@ -163,8 +163,7 @@
   .swatch-preview { height: 36px; border-radius: 4px; margin-bottom: 8px; }
   .swatch-split { display: flex; padding: 0; overflow: hidden; }
   .swatch-half { flex: 1; height: 36px; display: flex; align-items: center; justify-content: center; }
-  .swatch-oob { display: flex; align-items: center; justify-content: center; }
-  .swatch-badge { font-size: 9px; font-weight: 600; letter-spacing: 0.05em; color: rgba(255,255,255,0.9); text-shadow: 0 1px 2px rgba(0,0,0,0.7); pointer-events: none; }
+.swatch-badge { font-size: 9px; font-weight: 600; letter-spacing: 0.05em; color: rgba(255,255,255,0.9); text-shadow: 0 1px 2px rgba(0,0,0,0.7); pointer-events: none; }
 
   /* Tabs */
   .tabs { display: flex; gap: 2px; margin-bottom: 8px; }

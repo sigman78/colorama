@@ -75,8 +75,19 @@ export function evaluateScheme(scheme: ColorScheme): ResolvedScheme {
       backError: typeof scheme.base.back !== 'string' || scheme.base.back.trim() === '' ? 'required' : baseBack.error,
     },
     entries: scheme.entries.map((entry) => {
-      const font = resolveFormula(entry.fontFormula, ctx);
-      const back = resolveFormula(entry.backFormula, ctx);
+      // Font context: $F = base font (same-context → base), $B = base back (entry back unknown yet)
+      const fontColors: Record<string, OKLCH> = { ...ctx.colors };
+      if (baseFont.color) fontColors['F'] = baseFont.color;
+      if (baseBack.color) fontColors['B'] = baseBack.color;
+      const font = resolveFormula(entry.fontFormula, { ...ctx, colors: fontColors });
+
+      // Back context: $F = resolved entry font ?? base font (opposite-context), $B = base back
+      const backColors: Record<string, OKLCH> = { ...ctx.colors };
+      const fColor = font.color ?? baseFont.color;
+      if (fColor) backColors['F'] = fColor;
+      if (baseBack.color) backColors['B'] = baseBack.color;
+      const back = resolveFormula(entry.backFormula, { ...ctx, colors: backColors });
+
       return {
         name: entry.name,
         classes: entry.classes,
