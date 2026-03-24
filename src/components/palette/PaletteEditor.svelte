@@ -6,6 +6,10 @@
   import ColorPicker from './ColorPicker.svelte';
   import SwatchImport from './SwatchImport.svelte';
 
+  function sanitizeName(raw: string): string {
+    return raw.replace(/[^a-zA-Z0-9_]/g, '').replace(/^[0-9]+/, '');
+  }
+
   type Selection = { kind: 'color'; index: number } | { kind: 'scalar'; index: number } | null;
   let selected: Selection = $state(null);
 
@@ -153,7 +157,7 @@
       <div class="entry-editor">
         <label class="name-label">name
           <input class="name-input" value={color.name}
-            oninput={(e) => updateColor(selected.index, { ...color, name: (e.target as HTMLInputElement).value })} />
+            oninput={(e) => { const el = e.target as HTMLInputElement; const safe = sanitizeName(el.value); el.value = safe; updateColor(selected.index, { ...color, name: safe }); }} />
         </label>
         <ColorPicker color={color.color} onchange={(c) => updateColor(selected.index, { ...color, color: c })} />
       </div>
@@ -162,7 +166,7 @@
       <div class="entry-editor">
         <label class="name-label">name
           <input class="name-input" value={scalar.name}
-            oninput={(e) => updateScalar(selected.index, { ...scalar, name: (e.target as HTMLInputElement).value })} />
+            oninput={(e) => { const el = e.target as HTMLInputElement; const safe = sanitizeName(el.value); el.value = safe; updateScalar(selected.index, { ...scalar, name: safe }); }} />
         </label>
         <div class="scalar-editor">
           <input type="range" min="-2" max="2" step="0.01" value={scalar.value}
