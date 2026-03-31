@@ -20,10 +20,11 @@
 
   import { previewLang, previewFontSize } from '../stores/ui';
   import { resolved } from '../stores/scheme';
-  import { generateLiveCss } from '../lib/export';
+  import { generateLiveCss, scopeToCssSelector } from '../lib/export';
   import { formatOklch } from '../lib/color';
   import { snippets } from '../snippets/index';
   import type { PreviewLang } from '../stores/ui';
+  import type { ResolvedEntry } from '../lib/scheme';
 
   const LANGS: PreviewLang[] = ['cpp', 'rust', 'js', 'ts', 'css', 'html', 'toml', 'diff'];
 
@@ -42,6 +43,53 @@
     }
     el.textContent = liveCss;
   });
+
+  // Tooltip state
+  let tooltipVisible = $state(false);
+  let tooltipX = $state(0);
+  let tooltipY = $state(0);
+  let tooltipClasses = $state<string[]>([]);
+  let tooltipEntry = $state<ResolvedEntry | null>(null);
+  let lastTarget: Element | null = null;
+
+  function onCodeMouseMove(e: MouseEvent) {
+    tooltipX = e.clientX + 14;
+    tooltipY = e.clientY + 14;
+
+    const target = e.target as Element;
+    if (target === lastTarget) return;
+    lastTarget = target;
+
+    let el: Element | null = target;
+    let hljsClasses: string[] = [];
+    let matched: ResolvedEntry | null = null;
+
+    while (el && !el.classList.contains('hljs')) {
+      const cls = [...el.classList].filter((c) => c.startsWith('hljs-'));
+      if (cls.length > 0) {
+        hljsClasses = cls;
+        for (const entry of $resolved.entries) {
+          for (const scope of entry.classes) {
+            try {
+              if (el.matches(scopeToCssSelector(scope))) { matched = entry; break; }
+            } catch { /* ignore */ }
+          }
+          if (matched) break;
+        }
+        break;
+      }
+      el = el.parentElement;
+    }
+
+    tooltipClasses = hljsClasses;
+    tooltipEntry = matched;
+    tooltipVisible = hljsClasses.length > 0;
+  }
+
+  function onCodeMouseLeave() {
+    tooltipVisible = false;
+    lastTarget = null;
+  }
 </script>
 
 <div class="preview-pane">
@@ -59,8 +107,33 @@
       <button class="fs-btn" onclick={() => previewFontSize.update(s => Math.min(24, s + 1))}>+</button>
     </div>
   </div>
-  <pre class="code-area" style={backStyle}><code class="hljs" style="font-size: {$previewFontSize}px">{@html highlightedHtml}</code></pre>
+  <pre class="code-area" style={backStyle}><code class="hljs"
+    style="font-size: {$previewFontSize}px"
+    onmousemove={onCodeMouseMove}
+    onmouseleave={onCodeMouseLeave}
+  >{@html highlightedHtml}</code></pre>
 </div>
+
+{#if tooltipVisible}
+  <div class="cs-tooltip" style="left: {tooltipX}px; top: {tooltipY}px">
+    <div class="tt-classes">{tooltipClasses.map(c => c.replace('hljs-', '')).join(' ')}</div>
+    {#if tooltipEntry}
+      <div class="tt-entry">{tooltipEntry.name}</div>
+      <div class="tt-colors">
+        {#if tooltipEntry.font}
+          <span class="tt-swatch" style="background: oklch({tooltipEntry.font.l} {tooltipEntry.font.c} {tooltipEntry.font.h}deg)"></span>
+          <span class="tt-label">font</span>
+        {/if}
+        {#if tooltipEntry.back}
+          <span class="tt-swatch" style="background: oklch({tooltipEntry.back.l} {tooltipEntry.back.c} {tooltipEntry.back.h}deg)"></span>
+          <span class="tt-label">back</span>
+        {/if}
+      </div>
+    {:else}
+      <div class="tt-entry tt-base">base</div>
+    {/if}
+  </div>
+{/if}
 
 <style>
   .preview-pane {
@@ -86,4 +159,16 @@
     font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
     line-height: 1.7;
   }
+  .cs-tooltip {
+    position: fixed; z-index: 1000; pointer-events: none;
+    background: var(--bg-0); border: 1px solid var(--border);
+    border-radius: 5px; padding: 6px 8px; font-size: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4); max-width: 220px;
+  }
+  .tt-classes { color: var(--accent); font-family: monospace; font-size: 10px; margin-bottom: 3px; }
+  .tt-entry { color: var(--text-1); font-size: 11px; font-weight: 500; }
+  .tt-base { color: var(--text-3); font-style: italic; }
+  .tt-colors { display: flex; align-items: center; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
+  .tt-swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.15); }
+  .tt-label { color: var(--text-3); font-size: 9px; margin-right: 4px; }
 </style>
