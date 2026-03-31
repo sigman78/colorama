@@ -18,7 +18,7 @@
   hljs.registerLanguage('toml', toml);
   hljs.registerLanguage('diff', diff);
 
-  import { previewLang } from '../stores/ui';
+  import { previewLang, previewFontSize } from '../stores/ui';
   import { resolved } from '../stores/scheme';
   import { generateLiveCss } from '../lib/export';
   import { formatOklch } from '../lib/color';
@@ -53,8 +53,13 @@
         onclick={() => previewLang.set(lang)}
       >{lang}</button>
     {/each}
+    <div class="font-size-ctrl">
+      <button class="fs-btn" onclick={() => previewFontSize.update(s => Math.max(9, s - 1))}>−</button>
+      <span class="fs-label">{$previewFontSize}px</span>
+      <button class="fs-btn" onclick={() => previewFontSize.update(s => Math.min(24, s + 1))}>+</button>
+    </div>
   </div>
-  <pre class="code-area" style={backStyle}><code class="hljs">{@html highlightedHtml}</code></pre>
+  <pre class="code-area" style={backStyle}><code class="hljs" style="font-size: {$previewFontSize}px">{@html highlightedHtml}</code></pre>
 </div>
 
 <style>
@@ -72,9 +77,13 @@
     background: none; border: 1px solid transparent; color: var(--text-3); cursor: pointer;
   }
   .lang-btn.active { background: var(--bg-3); color: var(--text-1); border-color: var(--bg-4); }
+  .font-size-ctrl { margin-left: auto; display: flex; align-items: center; gap: 2px; }
+  .fs-btn { background: none; border: 1px solid transparent; border-radius: 3px; color: var(--text-3); font-size: 14px; line-height: 1; cursor: pointer; padding: 1px 5px; }
+  .fs-btn:hover { background: var(--bg-3); color: var(--text-1); }
+  .fs-label { font-size: 10px; color: var(--text-3); min-width: 28px; text-align: center; }
   .code-area {
     flex: 1; overflow: auto; padding: 14px; margin: 0;
     font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-    font-size: 13px; line-height: 1.7;
+    line-height: 1.7;
   }
 </style>

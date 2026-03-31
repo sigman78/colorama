@@ -6,3 +6,4 @@ export type PreviewLang = 'cpp' | 'rust' | 'js' | 'ts' | 'css' | 'html' | 'toml'
 export const activeTab = writable<EditorTab>('palette');
 export const previewLang = writable<PreviewLang>('cpp');
 export const pickerOpenId = writable<string | null>(null); // palette color name or null
+export const previewFontSize = writable<number>(13);
