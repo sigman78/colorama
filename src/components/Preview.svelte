@@ -6,6 +6,7 @@
   import ts    from 'highlight.js/lib/languages/typescript';
   import css   from 'highlight.js/lib/languages/css';
   import xml   from 'highlight.js/lib/languages/xml';
+  import markdown from 'highlight.js/lib/languages/markdown';
   import toml  from 'highlight.js/lib/languages/ini';
   import diff  from 'highlight.js/lib/languages/diff';
 
@@ -15,6 +16,7 @@
   hljs.registerLanguage('ts', ts);
   hljs.registerLanguage('css', css);
   hljs.registerLanguage('html', xml);
+  hljs.registerLanguage('md', markdown);
   hljs.registerLanguage('toml', toml);
   hljs.registerLanguage('diff', diff);
 
@@ -26,10 +28,13 @@
   import type { PreviewLang } from '../stores/ui';
   import type { ResolvedEntry } from '../lib/scheme';
 
-  const LANGS: PreviewLang[] = ['cpp', 'rust', 'js', 'ts', 'css', 'html', 'toml', 'diff'];
+  const LANGS: PreviewLang[] = ['cpp', 'rust', 'js', 'ts', 'css', 'html', 'md', 'toml', 'diff'];
 
   let highlightedHtml = $derived(
-    hljs.highlight(snippets[$previewLang], { language: $previewLang === 'html' ? 'html' : $previewLang }).value
+    hljs.highlight(
+      snippets[$previewLang],
+      { language: $previewLang === 'html' ? 'html' : $previewLang }
+    ).value
   );
   let liveCss = $derived(generateLiveCss($resolved));
   let backStyle = $derived($resolved.base.back ? `background: ${formatOklch($resolved.base.back)}` : '');
