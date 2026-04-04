@@ -16,10 +16,57 @@
     ondelete: () => void;
   } = $props();
 
+  const DROPDOWN_MIN_WIDTH = 220;
+  const VIEWPORT_MARGIN = 12;
+  const DROPDOWN_GAP = 6;
+
   let showClassDropdown = $state(false);
   let searchQuery = $state('');
   let activeIndex = $state(-1);
   let searchEl = $state<HTMLInputElement | null>(null);
+  let addButtonEl = $state<HTMLButtonElement | null>(null);
+  let dropdownEl = $state<HTMLDivElement | null>(null);
+  let dropdownStyle = $state('');
+  let dropdownWidth = $state(DROPDOWN_MIN_WIDTH);
+  let dropdownHeight = $state(220);
+
+  function updateDropdownPosition(recomputeSize = false) {
+    if (!showClassDropdown || !addButtonEl) return;
+
+    const rect = addButtonEl.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const availableBelow = viewportHeight - rect.bottom - VIEWPORT_MARGIN;
+    const availableAbove = rect.top - VIEWPORT_MARGIN;
+    const opensUpward = availableBelow < 180 && availableAbove > availableBelow;
+
+    if (recomputeSize) {
+      dropdownHeight = Math.max(
+        120,
+        Math.min(320, Math.floor(opensUpward ? availableAbove - DROPDOWN_GAP : availableBelow - DROPDOWN_GAP)),
+      );
+      dropdownWidth = Math.min(
+        Math.max(rect.width, DROPDOWN_MIN_WIDTH),
+        viewportWidth - (VIEWPORT_MARGIN * 2),
+      );
+    }
+
+    let left = rect.left;
+    const maxLeft = viewportWidth - VIEWPORT_MARGIN - dropdownWidth;
+    if (left > maxLeft) left = Math.max(VIEWPORT_MARGIN, maxLeft);
+
+    let top = opensUpward
+      ? rect.top - DROPDOWN_GAP - dropdownHeight
+      : rect.bottom + DROPDOWN_GAP;
+
+    top = Math.max(VIEWPORT_MARGIN, Math.min(top, viewportHeight - VIEWPORT_MARGIN - dropdownHeight));
+
+    dropdownStyle = `position: fixed; left: ${left}px; top: ${top}px; width: ${dropdownWidth}px; height: ${dropdownHeight}px;`;
+  }
+
+  function toggleClassDropdown() {
+    showClassDropdown = !showClassDropdown;
+  }
 
   function setName(e: Event) {
     onupdate({ ...entry, name: (e.target as HTMLInputElement).value });
@@ -62,9 +109,24 @@
 
   $effect(() => {
     if (activeIndex >= 0 && showClassDropdown) {
-      const el = document.querySelector(`.class-dropdown [data-idx="${activeIndex}"]`) as HTMLElement | null;
+      const el = dropdownEl?.querySelector(`[data-idx="${activeIndex}"]`) as HTMLElement | null;
       el?.scrollIntoView({ block: 'nearest' });
     }
+  });
+
+  $effect(() => {
+    if (!showClassDropdown) return;
+
+    updateDropdownPosition(true);
+
+    const handleViewportChange = () => updateDropdownPosition();
+    window.addEventListener('resize', handleViewportChange);
+    window.addEventListener('scroll', handleViewportChange, true);
+
+    return () => {
+      window.removeEventListener('resize', handleViewportChange);
+      window.removeEventListener('scroll', handleViewportChange, true);
+    };
   });
 
   function displayScope(scope: string): string {
@@ -129,11 +191,11 @@
     {#each entry.classes as cls}
       <span class="cls-tag">{displayScope(cls)} <button class="cls-remove" onclick={() => removeClass(cls)}>&#x2715;</button></span>
     {/each}
-    <button class="cls-add" onclick={() => (showClassDropdown = !showClassDropdown)}>+ add</button>
+    <button bind:this={addButtonEl} class="cls-add" onclick={toggleClassDropdown}>+ add</button>
     {#if showClassDropdown}
       <!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events -->
       <div class="dropdown-backdrop" aria-hidden="true" onclick={() => (showClassDropdown = false)}></div>
-      <div class="class-dropdown">
+      <div bind:this={dropdownEl} class="class-dropdown" style={dropdownStyle}>
         <div class="dropdown-header">
           <input
             bind:this={searchEl}
@@ -204,7 +266,7 @@
   .cls-remove:hover { color: var(--error); }
   .cls-add { background: none; border: 1px dashed var(--bg-4); border-radius: 3px; padding: 2px 7px; font-size: 10px; color: var(--accent); cursor: pointer; }
   .dropdown-backdrop { position: fixed; inset: 0; z-index: 9; }
-  .class-dropdown { position: absolute; top: 100%; left: 0; z-index: 10; background: var(--bg-0); border: 1px solid var(--border); border-radius: 4px; padding: 6px; max-height: 220px; overflow-y: auto; min-width: 220px; display: flex; flex-direction: column; gap: 1px; }
+  .class-dropdown { z-index: 10; background: var(--bg-0); border: 1px solid var(--border); border-radius: 6px; padding: 6px; overflow-y: auto; min-width: 220px; display: flex; flex-direction: column; gap: 1px; box-shadow: 0 14px 38px rgb(0 0 0 / 0.35); }
   .dropdown-header { display: flex; gap: 4px; margin-bottom: 4px; flex-shrink: 0; }
   .class-search { flex: 1; background: var(--bg-2); border: 1px solid var(--border); border-radius: 3px; padding: 3px 6px; color: var(--text-0); font-size: 11px; outline: none; }
   .class-search:focus { border-color: var(--accent); }
